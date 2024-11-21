@@ -6,6 +6,14 @@ import sys
 import termios
 import tty
 
+class Char:
+    EMPTY = "⬜"
+    FULL = "🟥🟨🟪🟩🟦🟫🟧"
+    
+    @staticmethod
+    def is_full(char):
+        return char in Char.FULL
+
 class Tile:
     __PREDEFINED_SHAPES = [
         [
@@ -42,12 +50,13 @@ class Tile:
         ]
         
     ]
-    def __init__(self, shape):
+    def __init__(self, shape, color):
         self.shape = shape
         self.width = len(shape[0])
         self.height = len(shape)
         self.x = 0
         self.y = 0
+        self.color = color
         
     def get_coord_in_board(self, x, y):
         return self.x + x, self.y + y
@@ -72,15 +81,15 @@ class Tile:
         
     @staticmethod
     def random():
-        random_shape = random.choice(Tile.__PREDEFINED_SHAPES)
-        return Tile(random_shape)
+        random_index = random.randint(0, len(Tile.__PREDEFINED_SHAPES) - 1)
+        color = Char.FULL[random_index]
+        shape = Tile.__PREDEFINED_SHAPES[random_index]
+        return Tile(shape, color)
     
 
 class Board:
-    EMPTY = "⬜"
-    FULL = "⬛"
     def __init__(self, height, width):
-        self.board = [[Board.EMPTY for _ in range(width)] for _ in range(height)]
+        self.board = [[Char.EMPTY for _ in range(width)] for _ in range(height)]
         self.width = width
         self.height = height
         self.add_new_falling_tile()
@@ -124,16 +133,16 @@ class Board:
             print("")
             
     def is_cell_empty(self, x, y):
-        return self.board[y][x] == Board.EMPTY
+        return self.board[y][x] == Char.EMPTY
     
     def is_cell_full(self, x, y):
         return not self.is_cell_empty(x, y)
             
     def clear_falling_tile(self):
-        self.__fill_falling_tile_in_board(Board.EMPTY)
+        self.__fill_falling_tile_in_board(Char.EMPTY)
     
     def show_falling_tile(self):
-        self.__fill_falling_tile_in_board(Board.FULL)
+        self.__fill_falling_tile_in_board(self.falling_tile.color)
             
     def __fill_falling_tile_in_board(self, char):
         for y in range(self.falling_tile.height):
@@ -166,10 +175,6 @@ class Board:
         else:
             self.add_new_falling_tile()
         self.show_falling_tile()
-    
-    
-
-    
 
 
 board = Board(20, 10)
