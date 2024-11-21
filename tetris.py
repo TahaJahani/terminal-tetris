@@ -30,12 +30,23 @@ class Board:
                 print(cell, end="")
             print("")
             
-    def fill_falling_tile(self, char):
+    def clear_falling_tile(self):
+        self.__fill_falling_tile_in_board(Board.EMPTY)
+    
+    def show_falling_tile(self):
+        self.__fill_falling_tile_in_board(Board.FULL)
+            
+    def __fill_falling_tile_in_board(self, char):
         for y in range(self.falling_tile.height):
             for x in range(self.falling_tile.width):
                 board_x, board_y = self.falling_tile.get_coord_in_board(x, y)
                 if self.falling_tile.shape[y][x] == 1:
                     self.board[board_y][board_x] = char
+    
+    def play_one_step(self):
+        board.clear_falling_tile()
+        board.falling_tile.move_down()
+        board.show_falling_tile()
     
     
 
@@ -52,9 +63,7 @@ tile.y = 1
 board.falling_tile = tile
 
 while True:
-    board.fill_falling_tile(Board.EMPTY)
-    board.falling_tile.move_down()
-    board.fill_falling_tile(Board.FULL)
+    board.play_one_step()
     board.print()
     time.sleep(0.5)
     
