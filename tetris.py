@@ -53,7 +53,8 @@ class Tile:
         
     @staticmethod
     def random():
-        pass
+        random_shape = random.choice(Tile.__PREDEFINED_SHAPES)
+        return Tile(random_shape)
     
 
 class Board:
