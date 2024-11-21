@@ -5,6 +5,7 @@ from threading import Thread
 import sys
 import termios
 import tty
+import math
 
 class Char:
     EMPTY = "⬜"
@@ -68,15 +69,31 @@ class Tile:
         max_y = self.y + self.height
         return min_x <= x < max_x and min_y <= y < max_y
     
-    def rotate(self):
-        new_width = self.height
-        new_height = self.width
+    def get_rotated_shape(self):
+        new_width = self.get_rotated_width()
+        new_height = self.get_rotated_height()
         new_shape = [[0] * new_width for _ in range(new_height)]
-        
+
         for y in range(self.height):
             for x in range(self.width):
                 new_shape[x][self.height - y - 1] = self.shape[y][x]
-        self.shape = new_shape
+        return new_shape
+    
+    def get_rotated_width(self):
+        return self.height
+    
+    def get_rotated_height(self):
+        return self.width
+    
+    def get_rotated_x(self):
+        delta_x = round((self.width - self.height) / 2)
+        return self.x + delta_x
+    
+    def rotate(self):
+        new_width = self.get_rotated_width()
+        new_height = self.get_rotated_height()
+        self.x = self.get_rotated_x()
+        self.shape = self.get_rotated_shape()
         self.width = new_width
         self.height = new_height
     
@@ -140,6 +157,7 @@ class Board:
     def read_input(self):
         K_RIGHT = b'\x1b[C'
         K_LEFT  = b'\x1b[D'
+        K_UP  = b'\x1b[A'
         for key in self.read_keys():
             if key == K_LEFT:
                 if self.can_falling_tile_move_left():
@@ -150,6 +168,11 @@ class Board:
                 if self.can_falling_tile_move_right():
                     self.clear_falling_tile()
                     self.falling_tile.move_right()
+                    self.show_falling_tile()
+            elif key == K_UP:
+                if self.can_falling_tile_rotate():
+                    self.clear_falling_tile()
+                    self.falling_tile.rotate()
                     self.show_falling_tile()
         
         
@@ -222,6 +245,23 @@ class Board:
                     return False
         return True
     
+    def can_falling_tile_rotate(self):
+        new_shape = self.falling_tile.get_rotated_shape()
+        new_x = self.falling_tile.get_rotated_x()
+        new_y = self.falling_tile.y
+        new_width = self.falling_tile.get_rotated_width()
+        new_height = self.falling_tile.get_rotated_height()
+        if new_x < 0 or new_x + new_width > self.width or new_y + new_height > self.height:
+            return False
+        for y in range(new_height):
+            for x in range(new_width):
+                board_y = new_y + y
+                board_x = new_x + x
+                if new_shape[y][x] == 1 and self.is_cell_full(board_x, board_y) and not self.falling_tile.is_board_coord_in_this_tile(board_x, board_y):
+                            return False
+        return True
+        
+    
     def delete_row(self, row_index):
         for x in range(self.width):
             self.board[row_index][x] = Char.EMPTY
@@ -269,3 +309,31 @@ while True:
     board.play_one_step()
     board.print()
     time.sleep(0.5)
+
+# tile = Tile([
+#     [0,1,0],
+#     [1,1,1]
+# ], "")
+# tile.rotate()
+# for y in range(tile.height):
+#     for x in range(tile.width):
+#         print(tile.shape[y][x], end="")
+#     print("")
+
+
+# board = Board(20, 10)
+# board.board[19][9] = Char.FULL[0]
+# board.board[18][8] = Char.FULL[0]
+# board.board[19][8] = Char.FULL[0]
+# board.board[18][9] = Char.FULL[0]
+# tile = Tile([
+#     [1,1,1],
+#     [0,1,0],
+# ], Char.FULL[1])
+# tile.x = 6
+# tile.y = 17
+# board.falling_tile = tile
+# board.show_falling_tile()
+# while True:
+#     board.print()
+#     time.sleep(0.5)
