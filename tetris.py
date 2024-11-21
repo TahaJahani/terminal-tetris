@@ -133,10 +133,12 @@ class Board:
                 if self.can_falling_tile_move_left():
                     self.clear_falling_tile()
                     self.falling_tile.move_left()
+                    self.show_falling_tile()
             elif key == K_RIGHT:
                 if self.can_falling_tile_move_right():
                     self.clear_falling_tile()
                     self.falling_tile.move_right()
+                    self.show_falling_tile()
         
         
     def read_keys(self):
