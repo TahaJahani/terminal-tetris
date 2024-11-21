@@ -58,11 +58,17 @@ class Board:
                 can_move = False
                 break
         return can_move
+    
+    def add_new_falling_tile(self):
+        pass
             
     
     def play_one_step(self):
-        board.clear_falling_tile()
-        board.falling_tile.move_down()
+        if self.can_falling_tile_move():
+            board.clear_falling_tile()
+            board.falling_tile.move_down()
+        else:
+            self.add_new_falling_tile()
         board.show_falling_tile()
     
     
