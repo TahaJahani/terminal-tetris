@@ -43,6 +43,17 @@ class Board:
                 if self.falling_tile.shape[y][x] == 1:
                     self.board[board_y][board_x] = char
     
+    def can_falling_tile_move(self):
+        can_move = True
+        bottom_index = self.falling_tile.height - 1
+        for x in range(self.falling_tile.width):
+            board_x, board_y = self.falling_tile.get_coord_in_board(x, bottom_index)
+            if self.board[board_y+1][board_x] == Board.FULL:
+                can_move = False
+                break
+        return can_move
+            
+    
     def play_one_step(self):
         board.clear_falling_tile()
         board.falling_tile.move_down()
