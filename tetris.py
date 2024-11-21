@@ -1,5 +1,6 @@
 import os
 import time
+import random
 
 class Tile:
     def __init__(self, shape):
@@ -14,6 +15,10 @@ class Tile:
     
     def move_down(self):
         self.y += 1
+        
+    @staticmethod
+    def random():
+        pass
     
 
 class Board:
@@ -22,6 +27,8 @@ class Board:
     def __init__(self, height, width):
         self.board = [[Board.EMPTY for _ in range(width)] for _ in range(height)]
         self.falling_tile: Tile = None
+        self.width = width
+        self.height = height
     
     def print(self):
         os.system("clear")
@@ -60,7 +67,10 @@ class Board:
         return can_move
     
     def add_new_falling_tile(self):
-        pass
+        random_x = random.randint(0, self.width - 1)
+        random_tile = Tile.random()
+        random_tile.x = random_x
+        return random_tile
             
     
     def play_one_step(self):
