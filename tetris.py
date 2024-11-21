@@ -105,11 +105,13 @@ class Board:
         K_LEFT  = b'\x1b[D'
         for key in self.read_keys():
             if key == K_LEFT:
-                self.clear_falling_tile()
-                self.falling_tile.move_left()
+                if self.can_falling_tile_move_left():
+                    self.clear_falling_tile()
+                    self.falling_tile.move_left()
             elif key == K_RIGHT:
-                self.clear_falling_tile()
-                self.falling_tile.move_right()
+                if self.can_falling_tile_move_right():
+                    self.clear_falling_tile()
+                    self.falling_tile.move_right()
         
         
     def read_keys(self):
@@ -151,7 +153,7 @@ class Board:
                 if self.falling_tile.shape[y][x] == 1:
                     self.board[board_y][board_x] = char
     
-    def can_falling_tile_move(self):
+    def can_falling_tile_move_down(self):
         for y in range(self.falling_tile.height):
             for x in range(self.falling_tile.width):
                 board_x, board_y = self.falling_tile.get_coord_in_board(x, y)
@@ -161,6 +163,13 @@ class Board:
                     return False
         return True
     
+    def can_falling_tile_move_left(self):
+        return self.falling_tile.x != 0
+    
+    def can_falling_tile_move_right(self):
+        return self.falling_tile.x + self.falling_tile.width != self.width
+        
+    
     def add_new_falling_tile(self):
         random_tile = Tile.random()
         tile_x = self.width // 2  - random_tile.width // 2
@@ -169,7 +178,7 @@ class Board:
             
     
     def play_one_step(self):
-        if self.can_falling_tile_move():
+        if self.can_falling_tile_move_down():
             self.clear_falling_tile()
             self.falling_tile.move_down()
         else:
