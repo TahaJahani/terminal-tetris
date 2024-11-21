@@ -1,6 +1,10 @@
 import os
 import time
 import random
+from threading import Thread
+import sys
+import termios
+import tty
 
 class Tile:
     __PREDEFINED_SHAPES = [
@@ -59,6 +63,12 @@ class Tile:
         if self.shape[y+1][x] != 1:
             return True
         return False
+    
+    def move_left(self):
+        self.x -= 1
+    
+    def move_right(self):
+        self.x += 1
         
     @staticmethod
     def random():
@@ -74,6 +84,37 @@ class Board:
         self.width = width
         self.height = height
         self.add_new_falling_tile()
+        self.start_input_thread()
+        self.end_game = False
+        
+    def start_input_thread(self):
+        input_thread = Thread(target=self.read_input)
+        input_thread.start()
+        
+    def read_input(self):
+        K_RIGHT = b'\x1b[C'
+        K_LEFT  = b'\x1b[D'
+        for key in self.read_keys():
+            if key == K_LEFT:
+                self.clear_falling_tile()
+                self.falling_tile.move_left()
+            elif key == K_RIGHT:
+                self.clear_falling_tile()
+                self.falling_tile.move_right()
+        
+        
+    def read_keys(self):
+        stdin = sys.stdin.fileno()
+        tattr = termios.tcgetattr(stdin)
+        try:
+            tty.setcbreak(stdin, termios.TCSANOW)
+            while True:
+                yield sys.stdin.buffer.read1()
+        except KeyboardInterrupt:
+            yield None
+        finally:
+            termios.tcsetattr(stdin, termios.TCSANOW, tattr)
+        
     
     def print(self):
         os.system("clear")
@@ -112,9 +153,9 @@ class Board:
         return True
     
     def add_new_falling_tile(self):
-        random_x = random.randint(0, self.width - 1)
         random_tile = Tile.random()
-        random_tile.x = random_x
+        tile_x = self.width // 2  - random_tile.width // 2
+        random_tile.x = tile_x
         self.falling_tile = random_tile
             
     
