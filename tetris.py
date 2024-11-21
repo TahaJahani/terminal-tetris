@@ -181,11 +181,21 @@ class Board:
             self.board[row_index][x] = Char.EMPTY
             
     def move_all_full_cells_down(self, row_index):
-        for y in range(0, row_index):
+        for y in range(row_index, 0, -1):
             for x in range(self.width):
                 if not self.falling_tile.is_board_coord_in_this_tile(x, y):
-                    self.board[y+1][x] = self.board[y][x]
-                    self.board[y+1][x] = Char.EMPTY
+                    self.board[y-1][x] = self.board[y][x]
+                    self.board[y][x] = Char.EMPTY
+                    
+    def get_full_rows(self):
+        full_rows = []
+        for y in range(self.height):
+            is_full = True
+            for x in range(self.width):
+                is_full &= self.is_cell_full(x, y)
+            if is_full:
+                full_rows.append(y)
+        return full_rows
         
     
     def add_new_falling_tile(self):
@@ -202,6 +212,10 @@ class Board:
         else:
             self.add_new_falling_tile()
         self.show_falling_tile()
+        full_rows = self.get_full_rows()
+        for row in full_rows:
+            self.delete_row(row)
+            self.move_all_full_cells_down(row)
 
 
 board = Board(20, 10)
