@@ -3,6 +3,41 @@ import time
 import random
 
 class Tile:
+    __PREDEFINED_SHAPES = [
+        [
+            [1,1],
+            [1,1]
+        ],
+        [
+            [1],
+            [1],
+            [1],
+            [1],
+        ],
+        [
+            [0,1,1],
+            [1,1,0]
+        ],
+        [
+            [1,1,0],
+            [0,1,1]
+        ],
+        [
+            [1,0],
+            [1,0],
+            [1,1],
+        ],
+        [
+            [0,1],
+            [0,1],
+            [1,1]
+        ],
+        [
+            [1,1,1],
+            [0,1,0]
+        ]
+        
+    ]
     def __init__(self, shape):
         self.shape = shape
         self.width = len(shape[0])
