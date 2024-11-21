@@ -61,6 +61,13 @@ class Tile:
     def get_coord_in_board(self, x, y):
         return self.x + x, self.y + y
     
+    def is_board_coord_in_this_tile(self, x, y):
+        min_x = self.x
+        max_x = self.x + self.width
+        min_y = self.y
+        max_y = self.y + self.height
+        return min_x <= x < max_x and min_y <= y < max_y
+    
     def move_down(self):
         self.y += 1
         
@@ -168,6 +175,17 @@ class Board:
     
     def can_falling_tile_move_right(self):
         return self.falling_tile.x + self.falling_tile.width != self.width
+    
+    def delete_row(self, row_index):
+        for x in range(self.width):
+            self.board[row_index][x] = Char.EMPTY
+            
+    def move_all_full_cells_down(self, row_index):
+        for y in range(0, row_index):
+            for x in range(self.width):
+                if not self.falling_tile.is_board_coord_in_this_tile(x, y):
+                    self.board[y+1][x] = self.board[y][x]
+                    self.board[y+1][x] = Char.EMPTY
         
     
     def add_new_falling_tile(self):
