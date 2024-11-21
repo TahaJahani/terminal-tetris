@@ -30,6 +30,12 @@ class Board:
                 print(cell, end="")
             print("")
             
+    def is_cell_empty(self, x, y):
+        return board[y][x] == Board.EMPTY
+    
+    def is_cell_full(self, x, y):
+        return not self.is_cell_empty(x, y)
+            
     def clear_falling_tile(self):
         self.__fill_falling_tile_in_board(Board.EMPTY)
     
@@ -48,7 +54,7 @@ class Board:
         bottom_index = self.falling_tile.height - 1
         for x in range(self.falling_tile.width):
             board_x, board_y = self.falling_tile.get_coord_in_board(x, bottom_index)
-            if self.board[board_y+1][board_x] == Board.FULL:
+            if self.is_cell_full(board_x, board_y + 1):
                 can_move = False
                 break
         return can_move
