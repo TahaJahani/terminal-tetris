@@ -158,6 +158,7 @@ class Board:
         K_RIGHT = b'\x1b[C'
         K_LEFT  = b'\x1b[D'
         K_UP  = b'\x1b[A'
+        K_DOWN = b'\x1b[B'
         for key in self.read_keys():
             if key == K_LEFT:
                 if self.can_falling_tile_move_left():
@@ -174,6 +175,8 @@ class Board:
                     self.clear_falling_tile()
                     self.falling_tile.rotate()
                     self.show_falling_tile()
+            elif key == K_DOWN:
+                self.drop_falling_tile()
         
         
     def read_keys(self):
@@ -289,6 +292,13 @@ class Board:
         tile_x = self.width // 2  - random_tile.width // 2
         random_tile.x = tile_x
         self.falling_tile = random_tile
+    
+    
+    def drop_falling_tile(self):
+        while self.can_falling_tile_move_down():
+            self.clear_falling_tile()
+            self.falling_tile.move_down()
+            self.show_falling_tile()
             
     
     def play_one_step(self):
