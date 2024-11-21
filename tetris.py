@@ -5,7 +5,6 @@ from threading import Thread
 import sys
 import termios
 import tty
-import math
 
 class Char:
     EMPTY = "⬜"
@@ -310,6 +309,8 @@ class Board:
         else:
             self.show_falling_tile()
             self.add_new_falling_tile()
+            if not self.can_falling_tile_move_down():
+                self.end_game = True
         full_rows = self.get_full_rows()
         for row in full_rows:
             self.delete_row(row)
@@ -321,4 +322,7 @@ board = Board(20, 10)
 while True:
     board.play_one_step()
     board.print()
+    if (board.end_game):
+        print("GAME OVER!")
+        break
     time.sleep(0.5)
