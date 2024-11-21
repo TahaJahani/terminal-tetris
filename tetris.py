@@ -71,12 +71,30 @@ class Tile:
     def move_down(self):
         self.y += 1
         
-    def is_edge_cell(self, x, y):
+    def is_bottom_edge_cell(self, x, y):
         if self.shape[y][x] != 1:
             return False
         if y == self.height - 1:
             return True
         if self.shape[y+1][x] != 1:
+            return True
+        return False
+    
+    def is_left_edge_cell(self, x, y):
+        if self.shape[y][x] != 1:
+            return False
+        if x == 0:
+            return True
+        if self.shape[y][x-1] != 1:
+            return True
+        return False
+    
+    def is_right_edge_cell(self, x, y):
+        if self.shape[y][x] != 1:
+            return False
+        if x == self.width - 1:
+            return True
+        if self.shape[y][x+1] != 1:
             return True
         return False
     
@@ -166,15 +184,29 @@ class Board:
                 board_x, board_y = self.falling_tile.get_coord_in_board(x, y)
                 if board_y == self.height - 1:
                     return False
-                if self.falling_tile.is_edge_cell(x, y) and self.is_cell_full(board_x, board_y + 1):
+                if self.falling_tile.is_bottom_edge_cell(x, y) and self.is_cell_full(board_x, board_y + 1):
                     return False
         return True
     
     def can_falling_tile_move_left(self):
-        return self.falling_tile.x != 0
+        for y in range(self.falling_tile.height):
+            for x in range(self.falling_tile.width):
+                board_x, board_y = self.falling_tile.get_coord_in_board(x, y)
+                if board_x == 0:
+                    return False
+                if self.falling_tile.is_left_edge_cell(x, y) and self.is_cell_full(board_x - 1, board_y):
+                    return False
+        return True
     
     def can_falling_tile_move_right(self):
-        return self.falling_tile.x + self.falling_tile.width != self.width
+        for y in range(self.falling_tile.height):
+            for x in range(self.falling_tile.width):
+                board_x, board_y = self.falling_tile.get_coord_in_board(x, y)
+                if board_x == self.width - 1:
+                    return False
+                if self.falling_tile.is_right_edge_cell(x, y) and self.is_cell_full(board_x + 1, board_y):
+                    return False
+        return True
     
     def delete_row(self, row_index):
         for x in range(self.width):
