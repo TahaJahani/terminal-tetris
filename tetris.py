@@ -68,6 +68,18 @@ class Tile:
         max_y = self.y + self.height
         return min_x <= x < max_x and min_y <= y < max_y
     
+    def rotate(self):
+        new_width = self.height
+        new_height = self.width
+        new_shape = [[0] * new_width for _ in range(new_height)]
+        
+        for y in range(self.height):
+            for x in range(self.width):
+                new_shape[x][self.height - y - 1] = self.shape[y][x]
+        self.shape = new_shape
+        self.width = new_width
+        self.height = new_height
+    
     def move_down(self):
         self.y += 1
         
