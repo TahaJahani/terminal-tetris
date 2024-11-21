@@ -51,6 +51,15 @@ class Tile:
     def move_down(self):
         self.y += 1
         
+    def is_edge_cell(self, x, y):
+        if self.shape[y][x] != 1:
+            return False
+        if y == self.height - 1:
+            return True
+        if self.shape[y+1][x] != 1:
+            return True
+        return False
+        
     @staticmethod
     def random():
         random_shape = random.choice(Tile.__PREDEFINED_SHAPES)
@@ -93,13 +102,13 @@ class Board:
                     self.board[board_y][board_x] = char
     
     def can_falling_tile_move(self):
-        bottom_index = self.falling_tile.height - 1
-        for x in range(self.falling_tile.width):
-            board_x, board_y = self.falling_tile.get_coord_in_board(x, bottom_index)
-            if board_y == self.height - 1:
-                return False
-            if self.is_cell_full(board_x, board_y + 1):
-                return False
+        for y in range(self.falling_tile.height):
+            for x in range(self.falling_tile.width):
+                board_x, board_y = self.falling_tile.get_coord_in_board(x, y)
+                if board_y == self.height - 1:
+                    return False
+                if self.falling_tile.is_edge_cell(x, y) and self.is_cell_full(board_x, board_y + 1):
+                    return False
         return True
     
     def add_new_falling_tile(self):
@@ -111,11 +120,11 @@ class Board:
     
     def play_one_step(self):
         if self.can_falling_tile_move():
-            board.clear_falling_tile()
-            board.falling_tile.move_down()
+            self.clear_falling_tile()
+            self.falling_tile.move_down()
         else:
             self.add_new_falling_tile()
-        board.show_falling_tile()
+        self.show_falling_tile()
     
     
 
@@ -126,6 +135,4 @@ board = Board(20, 10)
 while True:
     board.play_one_step()
     board.print()
-    input()
-    # time.sleep(0.5)
-    
+    time.sleep(0.5)
