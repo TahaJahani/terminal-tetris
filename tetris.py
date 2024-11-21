@@ -62,9 +62,9 @@ class Board:
     FULL = "⬛"
     def __init__(self, height, width):
         self.board = [[Board.EMPTY for _ in range(width)] for _ in range(height)]
-        self.falling_tile: Tile = None
         self.width = width
         self.height = height
+        self.add_new_falling_tile()
     
     def print(self):
         os.system("clear")
@@ -74,7 +74,7 @@ class Board:
             print("")
             
     def is_cell_empty(self, x, y):
-        return board[y][x] == Board.EMPTY
+        return self.board[y][x] == Board.EMPTY
     
     def is_cell_full(self, x, y):
         return not self.is_cell_empty(x, y)
@@ -93,20 +93,20 @@ class Board:
                     self.board[board_y][board_x] = char
     
     def can_falling_tile_move(self):
-        can_move = True
         bottom_index = self.falling_tile.height - 1
         for x in range(self.falling_tile.width):
             board_x, board_y = self.falling_tile.get_coord_in_board(x, bottom_index)
+            if board_y == self.height - 1:
+                return False
             if self.is_cell_full(board_x, board_y + 1):
-                can_move = False
-                break
-        return can_move
+                return False
+        return True
     
     def add_new_falling_tile(self):
         random_x = random.randint(0, self.width - 1)
         random_tile = Tile.random()
         random_tile.x = random_x
-        return random_tile
+        self.falling_tile = random_tile
             
     
     def play_one_step(self):
@@ -123,16 +123,9 @@ class Board:
 
 
 board = Board(20, 10)
-tile = Tile([
-    [0,1,0],
-    [1,1,1]
-])
-tile.x = 2
-tile.y = 1
-board.falling_tile = tile
-
 while True:
     board.play_one_step()
     board.print()
-    time.sleep(0.5)
+    input()
+    # time.sleep(0.5)
     
