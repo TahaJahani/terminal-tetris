@@ -273,8 +273,10 @@ class Board:
         for y in range(row_index, 0, -1):
             for x in range(self.width):
                 if not self.falling_tile.is_board_coord_in_this_tile(x, y):
-                    self.board[y-1][x] = self.board[y][x]
-                    self.board[y][x] = Char.EMPTY
+                    self.board[y][x] = self.board[y-1][x]
+        for x in range(self.width):
+            if not self.falling_tile.is_board_coord_in_this_tile(x, 0):
+                self.board[0][x] = Char.EMPTY
                     
     def get_full_rows(self):
         full_rows = []
@@ -302,16 +304,17 @@ class Board:
             
     
     def play_one_step(self):
+        self.clear_falling_tile()
         if self.can_falling_tile_move_down():
-            self.clear_falling_tile()
             self.falling_tile.move_down()
         else:
+            self.show_falling_tile()
             self.add_new_falling_tile()
-        self.show_falling_tile()
         full_rows = self.get_full_rows()
         for row in full_rows:
             self.delete_row(row)
             self.move_all_full_cells_down(row)
+        self.show_falling_tile()
 
 
 board = Board(20, 10)
@@ -319,31 +322,3 @@ while True:
     board.play_one_step()
     board.print()
     time.sleep(0.5)
-
-# tile = Tile([
-#     [0,1,0],
-#     [1,1,1]
-# ], "")
-# tile.rotate()
-# for y in range(tile.height):
-#     for x in range(tile.width):
-#         print(tile.shape[y][x], end="")
-#     print("")
-
-
-# board = Board(20, 10)
-# board.board[19][9] = Char.FULL[0]
-# board.board[18][8] = Char.FULL[0]
-# board.board[19][8] = Char.FULL[0]
-# board.board[18][9] = Char.FULL[0]
-# tile = Tile([
-#     [1,1,1],
-#     [0,1,0],
-# ], Char.FULL[1])
-# tile.x = 6
-# tile.y = 17
-# board.falling_tile = tile
-# board.show_falling_tile()
-# while True:
-#     board.print()
-#     time.sleep(0.5)
