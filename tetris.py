@@ -192,7 +192,7 @@ class Board:
         
     
     def print(self):
-        os.system("clear")
+        print("\033[H\033[J")
         for row in self.board:
             for cell in row:
                 print(cell, end="")
