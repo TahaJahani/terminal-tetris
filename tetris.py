@@ -192,7 +192,7 @@ class Board:
         
     
     def print(self):
-        print("\033[H\033[J")
+        print("\033[H")
         for row in self.board:
             for cell in row:
                 print(cell, end="")
@@ -318,6 +318,7 @@ class Board:
         self.show_falling_tile()
 
 
+os.system("clear")
 board = Board(20, 10)
 while True:
     board.play_one_step()
